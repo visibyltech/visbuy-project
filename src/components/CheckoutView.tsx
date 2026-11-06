@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PaymentMode } from '../types/visbuy';
+import type { PaymentMode } from '../types/visbuy';
 import { useVisbuy } from '../context/VisbuyContext';
 import {
   ShieldCheck,

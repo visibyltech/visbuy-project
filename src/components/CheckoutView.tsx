@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PaymentMode } from '../types/visbuy';
 import { useVisbuy } from '../context/VisbuyContext';
 import {
   ShieldCheck,
@@ -25,10 +26,14 @@ export const CheckoutView: React.FC = () => {
     redeemRewardsDiscount,
     placeOrder,
     openPaymentModal,
+    createSaveToBuyPlan,
+    createBnplPlan,
     setActiveView,
   } = useVisbuy();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState<PaymentMode>(cart[0]?.selectedPaymentMode || 'payNow');
+  const [bnplMonths, setBnplMonths] = useState<3 | 4>(3);
 
   // Address form
   const [customerName, setCustomerName] = useState('Oluwaseun Adebayo');
@@ -55,14 +60,44 @@ export const CheckoutView: React.FC = () => {
   const totalPayableUSD = cartTotalUSD + shippingCostUSD + taxUSD - rewardsDiscountUSD;
 
   const handleCompleteOrder = () => {
+    if (selectedPaymentMode === 'osusu') {
+      setActiveView('osusu-hub');
+      return;
+    }
+
+    const modeDeposit = selectedPaymentMode === 'saveToBuy'
+      ? totalPayableUSD * 0.30
+      : selectedPaymentMode === 'bnpl'
+        ? totalPayableUSD / (bnplMonths + 1)
+        : totalPayableUSD;
+
+    const modeLabel = selectedPaymentMode === 'payNow'
+      ? 'Pay Now'
+      : selectedPaymentMode === 'bnpl'
+        ? `Buy Now, Pay Later · ${bnplMonths} months`
+        : 'Save to Buy · 30% initial deposit';
+
     openPaymentModal(
-      `Order Checkout: ${cart.length} Item(s)`,
-      totalPayableUSD,
-      `VISBUY Checkout via ${paymentGateway}`,
+      `${modeLabel}: ${cart.length} Item(s)`,
+      modeDeposit,
+      `VISBUY Checkout · ${modeLabel} via ${paymentGateway}`,
       () => {
-        if (applyRewards && rewardsDiscountUSD > 0) {
-          redeemRewardsDiscount(rewardsDiscountUSD);
+        if (applyRewards && rewardsDiscountUSD > 0) redeemRewardsDiscount(rewardsDiscountUSD);
+
+        if (selectedPaymentMode === 'saveToBuy') {
+          cart.forEach((item) => {
+            const planProduct = { ...item.product, basePriceUSD: item.product.basePriceUSD * item.quantity };
+            createSaveToBuyPlan(planProduct, planProduct.basePriceUSD * 0.30, 'monthly');
+          });
         }
+
+        if (selectedPaymentMode === 'bnpl') {
+          cart.forEach((item) => {
+            const itemTotal = item.product.basePriceUSD * item.quantity;
+            createBnplPlan(item.product, itemTotal, itemTotal / (bnplMonths + 1), bnplMonths);
+          });
+        }
+
         placeOrder({
           customer: {
             name: customerName,
@@ -74,13 +109,14 @@ export const CheckoutView: React.FC = () => {
             streetAddress,
             nearestLandmark: landmark,
           },
-          items: [...cart],
+          items: cart.map((item) => ({ ...item, selectedPaymentMode })),
           subtotalUSD: cartTotalUSD,
           shippingCostUSD,
           taxUSD,
           rewardsDiscountUSD,
           totalUSD: totalPayableUSD,
-          paymentMethod: `${paymentGateway} Gateway`,
+          paymentMethod: `${modeLabel} · ${paymentGateway}`,
+          paymentStatus: selectedPaymentMode === 'payNow' ? 'PAID' : selectedPaymentMode === 'bnpl' ? 'PARTIALLY_PAID' : 'SAVINGS_ESCROW',
           deliveryMethod,
         });
         setActiveView('order-success');
@@ -252,7 +288,48 @@ export const CheckoutView: React.FC = () => {
             </div>
           </div>
 
-          {/* STEP 3: PAYMENT METHOD */}
+          {/* PAYMENT PLAN: choose how to pay for this order */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[#0047FF] text-white flex items-center justify-center font-bold text-xs">3</div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 font-display">Choose how you want to pay</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Select the payment option that works best for you.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {([
+                { id: 'payNow', title: 'Pay Now', desc: 'Pay the full amount at checkout.', icon: '💳' },
+                { id: 'bnpl', title: 'Buy Now, Pay Later', desc: 'Split payment into monthly instalments.', icon: '🗓️' },
+                { id: 'saveToBuy', title: 'Save to Buy', desc: 'Start with a minimum 30% deposit.', icon: '🐷' },
+                { id: 'osusu', title: 'Join an Osusu Group', desc: 'Purchase together and take turns.', icon: '🤝' },
+              ] as {id: PaymentMode; title: string; desc: string; icon: string}[]).map(option => {
+                const eligible = cart.length > 0 && cart.every(item => item.product.paymentOptions[option.id]);
+                const selected = selectedPaymentMode === option.id;
+                return <button key={option.id} type="button" disabled={!eligible} onClick={() => setSelectedPaymentMode(option.id)} className={`rounded-xl border p-4 text-left transition-all ${selected ? 'border-[#0757ee] bg-blue-50 ring-1 ring-[#0757ee]' : 'border-slate-200 bg-white'} ${!eligible ? 'opacity-40 cursor-not-allowed' : 'hover:border-blue-300'}`}>
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">{option.icon}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-slate-900">{option.title}</span>
+                      <span className="block text-xs text-slate-500 mt-1">{option.desc}</span>
+                      {!eligible && <span className="block text-[10px] text-slate-400 mt-1">Not available for every item in this cart</span>}
+                    </span>
+                    <span className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 ${selected ? 'border-[#0757ee] bg-[#0757ee] shadow-[inset_0_0_0_3px_white]' : 'border-slate-300'}`}/>
+                  </div>
+                </button>;
+              })}
+            </div>
+            {selectedPaymentMode === 'bnpl' && <div className="rounded-xl bg-indigo-50 p-3 flex items-center justify-between gap-3 text-xs">
+              <span className="font-semibold text-indigo-900">Choose instalment duration</span>
+              <div className="flex gap-2">
+                {[3,4].map(months => <button key={months} type="button" onClick={() => setBnplMonths(months as 3 | 4)} className={`px-3 py-2 rounded-lg font-bold ${bnplMonths === months ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-700'}`}>{months} months</button>)}
+              </div>
+            </div>}
+            {selectedPaymentMode === 'saveToBuy' && <p className="text-xs text-emerald-800 bg-emerald-50 rounded-lg p-3">Your initial deposit will be at least 30%. The product is delivered or collected only after the full balance has been completed.</p>}
+            {selectedPaymentMode === 'osusu' && <p className="text-xs text-blue-800 bg-blue-50 rounded-lg p-3">Continue to Osusu to select an available group and contribution slot for your product.</p>}
+          </div>
+
+          {/* STEP 4: PAYMENT GATEWAY */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-[#0047FF] text-white flex items-center justify-center font-bold text-xs">
@@ -358,7 +435,7 @@ export const CheckoutView: React.FC = () => {
               className="w-full py-3.5 px-4 bg-[#0047FF] hover:bg-[#0036cc] active:scale-[0.99] text-white font-semibold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
               <Lock className="w-4 h-4" />
-              <span>Authorize & Pay {formatPrice(totalPayableUSD)}</span>
+              <span>{selectedPaymentMode === 'osusu' ? 'Continue to Osusu Groups' : selectedPaymentMode === 'saveToBuy' ? `Pay 30% Deposit · ${formatPrice(totalPayableUSD * 0.30)}` : selectedPaymentMode === 'bnpl' ? `Pay Initial Instalment · ${formatPrice(totalPayableUSD / (bnplMonths + 1))}` : `Pay ${formatPrice(totalPayableUSD)}`}</span>
             </button>
 
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 pt-1">

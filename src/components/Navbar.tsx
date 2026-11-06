@@ -18,13 +18,19 @@ export const Navbar: React.FC = () => {
     setSelectedCategory('All Categories');
   };
   const goCategory = () => {
-    setActiveView('marketplace');
-    setSelectedCategory('All Categories');
-    document.getElementById('shop-categories')?.scrollIntoView({ behavior: 'smooth' });
+    setActiveView('categories');
   };
 
   return (
     <>
+      {activeView === 'categories' ? (
+        <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+          <div className="max-w-7xl mx-auto px-3 py-3 flex items-center gap-3">
+            <button onClick={() => setActiveView('marketplace')} aria-label="Back to home" className="shrink-0 text-slate-800"><span className="text-3xl leading-none">‹</span></button>
+            <div className="relative flex-1"><Search className="w-5 h-5 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"/><input value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setActiveView('marketplace'); }} placeholder="Search on VISBUY" className="w-full h-11 pl-12 pr-4 rounded-full bg-[#f1f2f4] border border-transparent text-sm outline-none focus:bg-white focus:border-blue-300"/></div>
+          </div>
+        </header>
+      ) : (
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
         <div className="bg-[#071a36] text-white">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 h-8 flex items-center justify-between text-[10px] sm:text-xs">
@@ -79,11 +85,12 @@ export const Navbar: React.FC = () => {
 
         {isMobileMenuOpen && <div className="lg:hidden border-t bg-white p-3 grid grid-cols-2 gap-2"><button onClick={() => setActiveView('osusu-hub')} className="p-3 rounded-lg bg-slate-50 text-left text-sm font-semibold"><Users2 className="inline w-4 mr-2 text-blue-600"/>Osusu Groups</button><button onClick={() => setActiveView('save-to-buy')} className="p-3 rounded-lg bg-slate-50 text-left text-sm font-semibold"><PiggyBank className="inline w-4 mr-2 text-blue-600"/>Save to Buy</button><button onClick={() => setActiveView('rent-savings')} className="p-3 rounded-lg bg-slate-50 text-left text-sm font-semibold"><Home className="inline w-4 mr-2 text-blue-600"/>Rent Savings</button><button onClick={() => setActiveView('support')} className="p-3 rounded-lg bg-slate-50 text-left text-sm font-semibold"><HelpCircle className="inline w-4 mr-2 text-blue-600"/>Support</button></div>}
       </header>
+      )}
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-slate-200 shadow-[0_-4px_18px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-5 max-w-xl mx-auto h-[66px]">
           <button onClick={goHome} className={'flex flex-col items-center justify-center gap-1 ' + (activeView === 'marketplace' && selectedCategory === 'All Categories' ? 'text-[#0757ee]' : 'text-slate-600')}><House className="w-5 h-5"/><span className="text-[10px] font-semibold">Home</span></button>
-          <button onClick={goCategory} className="flex flex-col items-center justify-center gap-1 text-slate-600"><LayoutGrid className="w-5 h-5"/><span className="text-[10px] font-semibold">Categories</span></button>
+          <button onClick={goCategory} className={'flex flex-col items-center justify-center gap-1 ' + (activeView === 'categories' ? 'text-[#f28a24]' : 'text-slate-600')}><LayoutGrid className="w-5 h-5"/><span className="text-[10px] font-semibold">Categories</span></button>
           <button onClick={() => setActiveView('cart')} className={'relative flex flex-col items-center justify-center gap-1 ' + (activeView === 'cart' ? 'text-[#0757ee]' : 'text-slate-600')}><span className="relative"><ShoppingCart className="w-5 h-5"/>{cartItemCount > 0 && <span className="absolute -top-2 -right-2 min-w-4 h-4 px-1 rounded-full bg-orange-500 text-white text-[9px] flex items-center justify-center">{cartItemCount}</span>}</span><span className="text-[10px] font-semibold">Cart</span></button>
           <button onClick={() => setActiveView('customer-dashboard')} className="flex flex-col items-center justify-center gap-1 text-slate-600"><Heart className="w-5 h-5"/><span className="text-[10px] font-semibold">Wishlist</span></button>
           <button onClick={() => setActiveView('customer-dashboard')} className={'flex flex-col items-center justify-center gap-1 ' + (activeView === 'customer-dashboard' ? 'text-[#0757ee]' : 'text-slate-600')}><UserRound className="w-5 h-5"/><span className="text-[10px] font-semibold">Account</span></button>

@@ -25,7 +25,7 @@ const MainContent: React.FC = () => {
   const { activeView } = useVisbuy();
 
   return (
-    <main className="min-h-screen flex flex-col justify-between">
+    <main className="min-h-screen flex flex-col justify-between pb-20 md:pb-0">
       <div className="flex-1">
         {activeView === 'marketplace' && <MarketplaceView />}
         {activeView === 'product-detail' && <ProductDetailView />}

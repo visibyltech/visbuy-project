@@ -73,6 +73,7 @@ interface VisbuyContextType {
   // BNPL
   bnplPlans: BNPLPlan[];
   payBnplInstallment: (planId: string, installmentId: string) => void;
+  createBnplPlan: (product: Product, totalAmountUSD: number, downPaymentUSD: number, installmentsCount: number) => void;
 
   // Rent Savings
   rentSavingsTargets: RentSavingsTarget[];
@@ -187,7 +188,7 @@ export const VisbuyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
           countryCode: 'NG',
           allocationPosition: 1,
-          paymentStatus: 'PAID',
+          paymentStatus: orderData.paymentStatus || 'PAID',
           deliveryStatus: 'DELIVERED',
           joinedAt: 'Oct 01, 2026',
         },
@@ -761,6 +762,36 @@ export const VisbuyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   // BNPL Actions
+  const createBnplPlan = (product: Product, totalAmountUSD: number, downPaymentUSD: number, installmentsCount: number) => {
+    const remainingAmountUSD = Math.max(0, totalAmountUSD - downPaymentUSD);
+    const monthlyInstallmentUSD = remainingAmountUSD / installmentsCount;
+    const installments = Array.from({ length: installmentsCount }, (_, index) => {
+      const due = new Date();
+      due.setMonth(due.getMonth() + index + 1);
+      return {
+        id: `inst-${Date.now()}-${index}`,
+        number: index + 1,
+        dueDate: due.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        amountUSD: monthlyInstallmentUSD,
+        status: 'UPCOMING' as const,
+      };
+    });
+    const plan: BNPLPlan = {
+      id: `bnpl-${Date.now()}-${product.id}`,
+      orderId: `VB-BNPL-${Date.now()}`,
+      productName: product.name,
+      totalAmountUSD,
+      downPaymentUSD,
+      remainingAmountUSD,
+      installmentsCount,
+      monthlyInstallmentUSD,
+      status: 'ACTIVE',
+      installments,
+    };
+    setBnplPlans((prev) => [plan, ...prev]);
+    addNotification('BNPL plan activated', `${product.name}: ${installmentsCount} monthly instalments have been scheduled.`, 'order');
+  };
+
   const payBnplInstallment = (planId: string, installmentId: string) => {
     setBnplPlans((prev) =>
       prev.map((plan) => {

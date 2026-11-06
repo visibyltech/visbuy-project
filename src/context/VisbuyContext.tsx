@@ -132,7 +132,7 @@ export const VisbuyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
     setActiveViewState(view);
     setIsMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export const VisbuyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const previousView = event.state?.visbuyView as VisbuyContextType['activeView'] | undefined;
       setActiveViewState(previousView || 'marketplace');
       setIsMobileMenuOpen(false);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, behavior: 'auto' });
     };
     window.addEventListener('popstate', handleBrowserBack);
     return () => window.removeEventListener('popstate', handleBrowserBack);

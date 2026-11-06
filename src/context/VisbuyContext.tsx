@@ -24,6 +24,7 @@ interface VisbuyContextType {
   // Active View Navigation
   activeView:
     | 'marketplace'
+    | 'categories'
     | 'product-detail'
     | 'osusu-hub'
     | 'save-to-buy'

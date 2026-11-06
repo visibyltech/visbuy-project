@@ -1,0 +1,6 @@
+{
+  "name": "VISBUY — Shop Smart",
+  "description": "Africa's premier marketplace and flexible-payment platform featuring Pay Now, BNPL installments, Save to Buy, Osusu group purchasing, and Rent Savings across all 54 African countries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

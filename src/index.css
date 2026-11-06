@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --color-visbuy-50: #eff4ff;
+  --color-visbuy-100: #dbe6fe;
+  --color-visbuy-200: #bfd5fe;
+  --color-visbuy-300: #93bbfd;
+  --color-visbuy-400: #6097fa;
+  --color-visbuy-500: #3b74f6;
+  --color-visbuy-600: #0047FF;
+  --color-visbuy-700: #0036cc;
+  --color-visbuy-800: #052c9b;
+  --color-visbuy-900: #0a2679;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+  background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbars for dashboard and horizontal category lists */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

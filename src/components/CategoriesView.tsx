@@ -1,27 +1,28 @@
 import React, { useMemo, useState } from 'react';
 import { useVisbuy } from '../context/VisbuyContext';
-import { PRODUCTS, PRODUCT_CATEGORIES } from '../data/products';
+import { PRODUCTS } from '../data/products';
 import { ChevronRight } from 'lucide-react';
 
 type Group = { label: string; categories: string[] };
 const GROUPS: Group[] = [
+  { label: 'Appliances & Home', categories: ['Home Appliances', 'Furniture'] },
   { label: 'Phones & Tablets', categories: ['Phones & Tablets'] },
+  { label: 'Electronics & Audio', categories: ['Electronics & Audio'] },
   { label: 'Computing', categories: ['Computers & Laptops'] },
-  { label: 'Electronics', categories: ['Electronics & Audio'] },
-  { label: 'Appliances', categories: ['Home Appliances'] },
-  { label: 'Home & Office', categories: ['Furniture'] },
-  { label: 'Fashion & Lifestyle', categories: ['Fashion & Shoes', 'Beauty & Care', 'Baby Products', 'Sports & Fitness'] },
+  { label: 'Fashion & Lifestyle', categories: ['Fashion & Shoes', 'Beauty & Care', 'Baby Products'] },
+  { label: 'Everyday Essentials', categories: ['Groceries', 'Sports & Fitness'] },
 ];
 const SIDE_ITEMS = [
-  { label: 'Home & Office', group: 'Home & Office' },
+  { label: 'Home & Office', group: 'Appliances & Home' },
   { label: 'Phones & Tablets', group: 'Phones & Tablets' },
   { label: 'Fashion', group: 'Fashion & Lifestyle' },
   { label: 'Health & Beauty', group: 'Fashion & Lifestyle' },
-  { label: 'Electronics', group: 'Electronics' },
+  { label: 'Electronics', group: 'Electronics & Audio' },
   { label: 'Computing', group: 'Computing' },
-  { label: 'Appliances', group: 'Appliances' },
+  { label: 'Appliances', group: 'Appliances & Home' },
   { label: 'Baby Products', group: 'Fashion & Lifestyle' },
-  { label: 'Sports & Fitness', group: 'Fashion & Lifestyle' },
+  { label: 'Groceries', group: 'Everyday Essentials' },
+  { label: 'Sports & Fitness', group: 'Everyday Essentials' },
 ];
 
 export const CategoriesView: React.FC = () => {
@@ -32,7 +33,7 @@ export const CategoriesView: React.FC = () => {
   const availableGroups = useMemo(() => GROUPS.map(group => ({
     ...group,
     categories: group.categories.filter(category =>
-      PRODUCT_CATEGORIES.includes(category as any) && PRODUCTS.some(product => product.category === category)
+      PRODUCTS.some(product => product.category === category)
     ),
   })).filter(group => group.categories.length > 0), []);
 

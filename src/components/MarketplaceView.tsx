@@ -24,7 +24,7 @@ const ProductRail: React.FC<{ title: string; products: Product[]; subtitle?: str
 };
 
 export const MarketplaceView: React.FC = () => {
-  const { searchQuery, setSearchQuery, selectedCategory, setSelectedCategory, sortBy, setSortBy } = useVisbuy();
+  const { searchQuery, setSearchQuery, selectedCategory, setSelectedCategory, sortBy, setSortBy, setActiveView } = useVisbuy();
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'bnpl' | 'saveToBuy' | 'osusu'>('all');
 
   const filteredProducts = useMemo(() => PRODUCTS.filter((p) => {

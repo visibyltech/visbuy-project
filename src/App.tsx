@@ -29,7 +29,7 @@ const MainContent: React.FC = () => {
     <main className="min-h-screen flex flex-col justify-between pb-20 md:pb-0">
       <div className="flex-1">
         {activeView === 'marketplace' && <MarketplaceView />}
-        {activeView === 'categories' && <CategoriesView />
+        {activeView === 'categories' && <CategoriesView />}
         {activeView === 'product-detail' && <ProductDetailView />}
         {activeView === 'osusu-hub' && <OsusuHubView />}
         {activeView === 'save-to-buy' && <SaveToBuyView />}

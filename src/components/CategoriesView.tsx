@@ -67,7 +67,7 @@ export const CategoriesView: React.FC = () => {
         </aside>
 
         <section className="min-w-0 flex-1 px-3 sm:px-5 py-3 sm:py-5 space-y-3 sm:space-y-4">
-          <button onClick={() => { setShowAllGroups(true); setActiveSide('Home & Office'); }} className="w-full h-[66px] sm:h-[78px] rounded-lg bg-white px-4 sm:px-6 flex items-center justify-between text-sm sm:text-base text-slate-800 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <button onClick={() => { setSelectedCategory('All Categories'); setSearchQuery(''); setActiveView('marketplace'); }} className="w-full h-[66px] sm:h-[78px] rounded-lg bg-white px-4 sm:px-6 flex items-center justify-between text-sm sm:text-base text-slate-800 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
             <span className="font-semibold">All Products</span><ChevronRight className="w-5 h-5"/>
           </button>
 

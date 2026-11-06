@@ -10,6 +10,7 @@ import { Footer } from './components/Footer';
 import { CountryModal } from './components/CountryModal';
 import { PaymentModal } from './components/PaymentModal';
 import { MarketplaceView } from './components/MarketplaceView';
+import { CategoriesView } from './components/CategoriesView';
 import { ProductDetailView } from './components/ProductDetailView';
 import { OsusuHubView } from './components/OsusuHubView';
 import { SaveToBuyView } from './components/SaveToBuyView';
@@ -28,6 +29,7 @@ const MainContent: React.FC = () => {
     <main className="min-h-screen flex flex-col justify-between pb-20 md:pb-0">
       <div className="flex-1">
         {activeView === 'marketplace' && <MarketplaceView />}
+        {activeView === 'categories' && <CategoriesView />
         {activeView === 'product-detail' && <ProductDetailView />}
         {activeView === 'osusu-hub' && <OsusuHubView />}
         {activeView === 'save-to-buy' && <SaveToBuyView />}
@@ -39,7 +41,7 @@ const MainContent: React.FC = () => {
         {activeView === 'admin-dashboard' && <AdminDashboardView />}
         {activeView === 'support' && <SupportView />}
       </div>
-      <Footer />
+      {activeView !== 'categories' && <Footer />}
     </main>
   );
 };

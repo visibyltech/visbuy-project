@@ -120,7 +120,36 @@ export const VisbuyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return AFRICAN_COUNTRIES_BY_CODE.get('NG') || ALL_54_AFRICAN_COUNTRIES[0];
   });
 
-  const [activeView, setActiveView] = useState<VisbuyContextType['activeView']>('marketplace');
+  const [activeView, setActiveViewState] = useState<VisbuyContextType['activeView']>('marketplace');
+
+  // Record in-app screens in browser history so Android/browser Back stays inside VISBUY.
+  const setActiveView = (view: VisbuyContextType['activeView']) => {
+    if (view === activeView) return;
+    window.history.pushState(
+      { ...(window.history.state || {}), visbuyView: view },
+      '',
+      window.location.href
+    );
+    setActiveViewState(view);
+    setIsMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  useEffect(() => {
+    window.history.replaceState(
+      { ...(window.history.state || {}), visbuyView: 'marketplace' },
+      '',
+      window.location.href
+    );
+    const handleBrowserBack = (event: PopStateEvent) => {
+      const previousView = event.state?.visbuyView as VisbuyContextType['activeView'] | undefined;
+      setActiveViewState(previousView || 'marketplace');
+      setIsMobileMenuOpen(false);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+    window.addEventListener('popstate', handleBrowserBack);
+    return () => window.removeEventListener('popstate', handleBrowserBack);
+  }, []);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(PRODUCTS[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');

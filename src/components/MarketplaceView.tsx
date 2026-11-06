@@ -53,14 +53,14 @@ export const MarketplaceView: React.FC = () => {
   }, [searchQuery, selectedCategory, paymentFilter, sortBy]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-3 sm:space-y-5">
       {/* Hero Banner only shown when not actively searching/filtering */}
       {searchQuery === '' && selectedCategory === 'All Categories' && <HeroBanner />}
 
       {/* Main Catalog Section */}
-      <section id="marketplace-products" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <section id="marketplace-products" className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 space-y-3 sm:space-y-5">
         {/* Filter and Controls Bar */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Payment Method Filter Tabs */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
             <span className="text-slate-400 font-medium mr-1 text-[11px] uppercase tracking-wider shrink-0">
@@ -136,7 +136,7 @@ export const MarketplaceView: React.FC = () => {
 
         {/* Product Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-4">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

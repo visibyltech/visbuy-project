@@ -1088,6 +1088,7 @@ export const VisbuyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         makeSaveDeposit,
         bnplPlans,
         payBnplInstallment,
+        createBnplPlan,
         rentSavingsTargets,
         createRentSavingsTarget,
         depositRentSavings,
